@@ -1,0 +1,109 @@
+
+type colour = Red | Green | Blue | RGB of float*float*float
+
+let amountofBlue x = match x with
+  |RGB (r,g,b) -> b
+  |Blue -> 255.0
+  |_ -> 0. 
+
+let brightness x = match x with 
+  |Blue -> 255.0*.0.08
+  |Red -> 255.0*.0.21
+  |Green -> 0.71*.255.0
+  |RGB (r,g,b) ->  r*.0.21 +. g*.0.71 +. b*.0.08
+                                      
+
+let rec length xl = match xl with 
+  |[] -> 0.
+  |h::tl -> length tl +. 1.
+
+
+let rec avBrightness xl = match xl with 
+  |[] -> 0.0
+  |h::tl -> (brightness h +. avBrightness tl) /. length xl
+              
+
+type lang = HTML | PHP | JavaScript | Cplusplus | Python | C | Go | Java | Dart | Rust | OCaml 
+            
+type comparison = GR | LE | EQ
+                  
+let get_int l = match l with 
+  |HTML -> -1
+  |PHP -> 0 
+  |JavaScript -> 0 
+  |Cplusplus -> 1
+  |Python -> 2
+  |C -> 3
+  |Go -> 4 
+  |Java -> 5
+  |Dart -> 6
+  |Rust -> 6 
+  |OCaml -> 7
+    
+let compareLanguages lang1 lang2 = if get_int lang1 = get_int lang2 then EQ
+  else if get_int lang1 < get_int lang2 then LE else GR
+  
+    
+
+type colour = Blue | Red | Black | Purple
+type brand = RainerInc | TheoInc | RetikerInc
+type equipment = AirConditioner | NavigationSystem | ParkingAssistant | SeatHeating
+type vehicle = Car of (brand * colour * equipment list) | Tricycle of colour
+                 
+let colourMul x = match x with 
+  |Blue -> 3
+  |Purple -> 2
+  |Black -> 1
+  |Red -> 1
+
+let rec equipment xl = match xl with
+  |[] -> 0
+  |h::tl -> match h with
+    |AirConditioner -> 500 + equipment tl
+    |NavigationSystem -> 1500 + equipment tl
+    |ParkingAssistant -> 2300 + equipment tl
+    |SeatHeating -> 3200 + equipment tl
+                      
+let price c = match c with
+  |Tricycle c -> 100 + 50*(colourMul c)
+  |Car (b,c,xl) -> match b with
+    |RainerInc -> 15000 + 2* colourMul c* equipment xl
+    |TheoInc -> 5000 + 1* colourMul c* equipment xl
+    |RetikerInc -> 60000 + 3* colourMul c* equipment xl 
+                           
+type comparison = GR | LE | EQ 
+let comp a b = if a=b 
+  then EQ else if a>b then GR else LE ;;
+
+let rec merge comp xl yl = match xl,yl with 
+  |[],yl -> yl 
+  |xl,[] -> xl
+  |hx::tlx, hy::tly -> if comp hx hy = GR
+      then hy::merge comp xl tly
+      else hx::merge comp tlx yl
+             
+let rec merge1 comp l1 l2 = match l1 , l2 with
+  | [], l2 -> l2
+  | l1 , []-> l1
+  | x::tl1 , y:: tl2 -> match comp x y with
+    | LE -> x :: merge comp tl1 l2
+    | _ -> y :: merge comp l1 tl2
+
+let rec foldl f xl s = match xl with
+  |[] -> s
+  |h::tl -> foldl f tl (f h s)
+              
+let split xs = foldl (fun x (xs,ys) -> (ys, x::xs)) xs ([],[]) 
+    
+let rec polymsort comp xl = match xl with
+  |[] -> []
+  |[a] -> [a]
+  |xl -> let (a,b) = split xl in merge comp (polymsort comp a) (polymsort comp b)
+
+        
+let cmp a b = match a mod 2, b mod 2 with
+  |1,0 -> LE
+  |0,1 -> GR
+  |_,_ -> comp a b
+            
+let sortmod xl = polymsort cmp xl
