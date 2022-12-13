@@ -147,3 +147,6 @@ let rec segment xl = match xl with
   |[] -> raise Not_found
   |xl -> (help (max xl),delete xl (position xl (help (max xl))))
   
+let rec maxsort xl = match segment xl with                                (*SORTING IN A DIFFERENT WAY*)
+  |(mx,[]) -> [mx]
+  |(mx,l) -> maxsort l @ [mx]
