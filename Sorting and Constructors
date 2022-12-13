@@ -81,6 +81,15 @@ let rec merge comp xl yl = match xl,yl with
   |hx::tlx, hy::tly -> if comp hx hy = GR
       then hy::merge comp xl tly
       else hx::merge comp tlx yl
+      
+let rec merge comp xl yl = match xl,yl with 
+  |[],yl -> yl 
+  |xl,[] -> xl
+  |hx::tlx, hy::tly -> if comp hx hy = GR            (*TO MERGE SORT AND REMOVE DUBLICATES*)
+      then hy::merge comp xl tly
+      else if comp hx hy = LE 
+      then hx::merge comp tlx yl
+      else hx::merge comp tlx tly
              
 let rec merge1 comp l1 l2 = match l1 , l2 with
   | [], l2 -> l2
