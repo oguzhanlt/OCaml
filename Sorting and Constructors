@@ -116,3 +116,34 @@ let cmp a b = match a mod 2, b mod 2 with
   |_,_ -> comp a b
             
 let sortmod xl = polymsort cmp xl
+
+(*
+Declare a function segment: 𝛼 list → ( 𝛼 * 𝛼 list) that, for a given list l, returns a tuple
+containing the maximum element and a list with all elements of l except the maximum. Raise an exception
+if the list l is empty.
+Hint: Calculate the maximal element’s index first and use delete.
+Example: segment [4; 5; 2; 9; 1] = (9, [4; 5; 2; 1]), segment [42] = (42, [])
+*)
+
+exception Empty_list  
+  
+let rec max xl = match xl with 
+  |[] -> raise Empty_list
+  |h::tl -> hd (pisort comp xl)
+              
+let rec delete l x = match l with
+  |[] -> raise Not_found
+  |h::tl -> if x=0 then tl else h::(delete tl (x-1)) 
+
+let rec position xl n = match xl with 
+  |[] -> raise Not_found
+  |h::tl -> if h=n then 0 else position tl n +1
+  
+let help xl = match xl with 
+  |[x] -> x
+  |_ -> raise Not_found
+           
+let rec segment xl = match xl with 
+  |[] -> raise Not_found
+  |xl -> (help (max xl),delete xl (position xl (help (max xl))))
+  
